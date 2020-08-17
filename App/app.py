@@ -56,12 +56,14 @@ def loadCSVFile (file, lst, sep=";"):
             spamreader = csv.DictReader(csvfile, dialect=dialect)
             for row in spamreader: 
                 lst.append(row)
+            
     except:
         del lst[:]
         print("Se presento un error en la carga del archivo")
-    
+   
     t1_stop = process_time() #tiempo final
     print("Tiempo de ejecución ",t1_stop-t1_start," segundos")
+    return lst
 
 def printMenu():
     """
@@ -94,8 +96,9 @@ def countElementsFilteredByColumn(criteria, column, lst):
     else:
         t1_start = process_time() #tiempo inicial
         counter=0 #Cantidad de repeticiones
-        for element in lst:
-            if criteria.lower() in element[column].lower(): #filtrar por palabra clave 
+        for i in range(0,len(lst)):
+
+            if criteria.lower() in lst[i][column].lower(): #filtrar por palabra clave 
                 counter+=1
         t1_stop = process_time() #tiempo final
         print("Tiempo de ejecución ",t1_stop-t1_start," segundos")
@@ -105,8 +108,20 @@ def countElementsByCriteria(criteria, column, lst):
     """
     Retorna la cantidad de elementos que cumplen con un criterio para una columna dada
     """
-    return 0
-
+    if len(lst)==0:
+        print("La lista esta vacía")  
+        return 0
+    else:
+        t1_start = process_time() 
+        counter=0 
+        for i in range(0,len(lst)):
+            if criteria.lower() == lst[i]["director_name"].lower():
+                if float(lst[i]["vote_average"])>=6:
+                    counter+=1
+                    
+        t1_stop = process_time() 
+        print("Tiempo de ejecución ",t1_stop-t1_start," segundos")
+    return counter
 
 def main():
     """
@@ -122,7 +137,8 @@ def main():
         inputs =input('Seleccione una opción para continuar\n') #leer opción ingresada
         if len(inputs)>0:
             if int(inputs[0])==1: #opcion 1
-                loadCSVFile("Data/test.csv", lista) #llamar funcion cargar datos
+                
+                loadCSVFile("AllMoviesDetailsCleaned.csv", lista) #llamar funcion cargar datos
                 print("Datos cargados, "+str(len(lista))+" elementos cargados")
             elif int(inputs[0])==2: #opcion 2
                 if len(lista)==0: #obtener la longitud de la lista
